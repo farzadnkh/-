@@ -9,16 +9,15 @@ robot:payment-api:
   stage: test
   image: python:3.11-slim
   before_script:
-    - pip install -r payment-api-robot/requirements.txt
+    - pip install -r requirements.txt
   script:
     - |
-      cd payment-api-robot
       python mock_server.py &
       sleep 3
       robot $ROBOT_OPTIONS features/
   artifacts:
     when: always
     paths:
-      - payment-api-robot/results/
+      - results/
     name: "robot-reports-$CI_COMMIT_SHORT_SHA"
   allow_failure: false

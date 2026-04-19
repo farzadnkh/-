@@ -1,14 +1,29 @@
 # Portfolio workspace
 
-This repository groups several independent projects. Each folder is self-contained with its own README and tooling.
+This repository used to bundle several projects in one folder. **Each project now has its own GitHub repository** (same history for that folder via `git subtree split`).
 
-| Folder | Description |
-|--------|-------------|
-| [payment-api-robot](payment-api-robot/) | Robot Framework API tests (mock server, CI in `.github` / `.gitlab-ci.yml`). |
-| [dotnet-test](dotnet-test/) | .NET samples (e.g. exchange rate provider, KYC Jibit client). |
-| [playwright-e2e-tests](playwright-e2e-tests/) | Playwright end-to-end tests. |
-| [automation-test](automation-test/) | UI automation (Playwright) sample. |
-| [test/aparat-automation](test/aparat-automation/) | Aparat flow Playwright tests. |
-| [stress-test](stress-test/) | Load / stress test configs (e.g. k6-style YAML). |
+| Project | Repository |
+|--------|------------|
+| Robot Framework – payment API | [farzadnkh/payment-api-robot](https://github.com/farzadnkh/payment-api-robot) |
+| .NET samples | [farzadnkh/dotnet-test](https://github.com/farzadnkh/dotnet-test) |
+| Playwright E2E | [farzadnkh/playwright-e2e-tests](https://github.com/farzadnkh/playwright-e2e-tests) |
+| UI automation sample | [farzadnkh/automation-test](https://github.com/farzadnkh/automation-test) |
+| Aparat Playwright | [farzadnkh/aparat-automation](https://github.com/farzadnkh/aparat-automation) |
+| Stress test configs | [farzadnkh/stress-test](https://github.com/farzadnkh/stress-test) |
 
-Clone the repo, then open only the project you need—dependencies and run instructions are documented per folder.
+## Reproduce the split from this monorepo
+
+1. Create **empty** repositories under `farzadnkh` with the names above (no README).
+2. From this directory, run:
+
+```powershell
+.\scripts\split-repos.ps1
+```
+
+Use SSH remotes if you prefer:
+
+```powershell
+.\scripts\split-repos.ps1 -RemoteBase "git@github.com:farzadnkh"
+```
+
+3. If `git subtree split` is slow on large folders (e.g. `dotnet-test`), let it finish; only network/auth errors need a retry after fixing credentials.
