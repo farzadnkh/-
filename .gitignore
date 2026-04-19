@@ -1,0 +1,44 @@
+# Robot Framework
+results/
+output.xml
+log.html
+report.html
+
+# Dependencies
+node_modules/
+
+# .NET build output
+**/bin/
+**/obj/
+**/out/
+
+# Playwright / test artifacts
+**/playwright-report/
+**/test-results/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets and local overrides (keep *.example committed)
+.env
+!.env.example
+!**/.env.example
+**/nuget.config.user
+UserNuGet.config
