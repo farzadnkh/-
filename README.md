@@ -9,6 +9,6 @@ This repository groups several independent projects. Each folder is self-contain
 | [playwright-e2e-tests](playwright-e2e-tests/) | Playwright end-to-end tests. |
 | [automation-test](automation-test/) | UI automation (Playwright) sample. |
 | [test/aparat-automation](test/aparat-automation/) | Aparat flow Playwright tests. |
-| [stres](stres/) | Load / stress test configs (e.g. k6-style YAML). |
+| [stress-test](stress-test/) | Load / stress test configs (e.g. k6-style YAML). |
 
 Clone the repo, then open only the project you need—dependencies and run instructions are documented per folder.
