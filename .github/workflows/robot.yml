@@ -9,6 +9,9 @@ on:
 jobs:
   robot:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: payment-api-robot
     steps:
       - uses: actions/checkout@v4
 
@@ -60,4 +63,4 @@ jobs:
         if: always()
         with:
           name: robot-reports
-          path: results/
+          path: payment-api-robot/results/
