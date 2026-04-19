@@ -1,3 +1,17 @@
+# Portfolio Projects
+
+This repository is now only an index for the standalone project repositories under `farzadnkh`.
+
+## Repositories
+
+- [payment-api-robot](https://github.com/farzadnkh/payment-api-robot)
+- [dotnet-test](https://github.com/farzadnkh/dotnet-test)
+- [playwright-e2e-tests](https://github.com/farzadnkh/playwright-e2e-tests)
+- [automation-test](https://github.com/farzadnkh/automation-test)
+- [aparat-automation](https://github.com/farzadnkh/aparat-automation)
+- [stress-test](https://github.com/farzadnkh/stress-test)
+
+The source folders were removed from this umbrella repo to avoid duplication and reduce the chance of leaking old project files.
 # Portfolio workspace (umbrella monorepo)
 
 This repo (`farzadnkh/-`) still contains **all projects in one tree**. Separated **standalone Git repositories** (one folder = one `.git`) live next to this folder:

@@ -1,0 +1,852 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.1 (Python 3.14.3 on win32)" generated="2026-02-17T13:16:47.740916" rpa="false" schemaversion="5">
+<suite id="s1" name="Features" source="C:\Users\Admin\Documents\payment-api-automation\features">
+<suite id="s1-s1" name="Payment Validation" source="C:\Users\Admin\Documents\payment-api-automation\features\payment_validation.robot">
+<kw name="Suite Setup For Payment API" owner="payment_resources" type="SETUP">
+<kw name="Ensure Server Available" owner="apis.payment_api.PaymentAPI">
+<doc>Verify mock server is reachable. Raises AssertionError with clear message if not.</doc>
+<status status="PASS" start="2026-02-17T13:16:47.972409" elapsed="2.055849"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-02-17T13:16:50.028637" level="INFO">Creating Session using : alias=payment, url=http://localhost:8080, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${SESSION}</arg>
+<arg>${BASE_URL}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-02-17T13:16:50.028420" elapsed="0.000314"/>
+</kw>
+<doc>Verify mock server is up, then create HTTP session.</doc>
+<status status="PASS" start="2026-02-17T13:16:47.972095" elapsed="2.056687"/>
+</kw>
+<test id="s1-s1-t1" name="S1 Happy path – online, wallet, BNPL present and all clickable" line="6">
+<kw name="We Request Payment For Scenario" owner="payment_resources">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-02-17T13:16:50.031076" level="INFO">${params} = {'CellNumber': '09123456789', 'scenario': 's1'}</msg>
+<var>${params}</var>
+<arg>CellNumber=${CELL_NUMBER}</arg>
+<arg>scenario=${scenario}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-02-17T13:16:50.030434" elapsed="0.000662"/>
+</kw>
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2026-02-17T13:16:52.060880" level="INFO">GET Request : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s1 
+ path_url=/payment/?CellNumber=09123456789&amp;scenario=s1 
+ headers={'User-Agent': 'python-requests/2.32.5', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'} 
+ body=None 
+ </msg>
+<msg time="2026-02-17T13:16:52.060973" level="INFO">GET Response : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s1 
+ status=200, reason=OK 
+ headers={'Server': 'Werkzeug/3.1.5 Python/3.14.3', 'Date': 'Tue, 17 Feb 2026 09:46:52 GMT', 'Content-Type': 'application/json', 'Content-Length': '613', 'Connection': 'close'} 
+ body={"payment_methods":[{"id":1,"is_clickable":true,"title":"Online Payment","type":"online"},{"id":11,"is_clickable":true,"source_id":316,"title":"Digital Wallet","type":"wallet"},{"id":8,"is_clickable":true,"options":[{"credit":50000000,"is_active":true,"is_default":true,"price_type":"CASH_PRICE","source_id":386,"title":"\u0642\u0633\u0637 1"},{"credit":409361033,"is_active":true,"is_default":false,"price_type":"CREDIT_PRICE","source_id":387,"title":"\u0642\u0633\u0637 3"}],"source_id":367,"title":"\u067e\u0631\u062f\u0627\u062e\u062a \u0627\u0639\u062a\u0628\u0627\u0631\u06cc","type":"bnpl"}],"status":200}
+ 
+ </msg>
+<msg time="2026-02-17T13:16:52.061072" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${SESSION}</arg>
+<arg>/payment/</arg>
+<arg>params=${params}</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-02-17T13:16:50.031162" elapsed="2.029926"/>
+</kw>
+<kw name="Convert String To Json" owner="JSONLibrary">
+<msg time="2026-02-17T13:16:52.061549" level="INFO">${payment_response} = {'payment_methods': [{'id': 1, 'is_clickable': True, 'title': 'Online Payment', 'type': 'online'}, {'id': 11, 'is_clickable': True, 'source_id': 316, 'title': 'Digital Wallet', 'type': 'wallet'}, {'id...</msg>
+<var>${payment_response}</var>
+<arg>${resp.text}</arg>
+<doc>Convert String to JSON object</doc>
+<status status="PASS" start="2026-02-17T13:16:52.061200" elapsed="0.000362"/>
+</kw>
+<kw name="Set Test Variable" owner="BuiltIn">
+<msg time="2026-02-17T13:16:52.061850" level="INFO">${payment_response} = {'payment_methods': [{'id': 1, 'is_clickable': True, 'title': 'Online Payment', 'type': 'online'}, {'id': 11, 'is_clickable': True, 'source_id': 316, 'title': 'Digital Wallet', 'type': 'wallet'}, {'id...</msg>
+<arg>${payment_response}</arg>
+<arg>${payment_response}</arg>
+<doc>Makes a variable available everywhere within the scope of the current test.</doc>
+<status status="PASS" start="2026-02-17T13:16:52.061627" elapsed="0.000243"/>
+</kw>
+<arg>s1</arg>
+<doc>GET /payment/ for given scenario; store response in ${payment_response}.</doc>
+<status status="PASS" start="2026-02-17T13:16:50.029961" elapsed="2.031949"/>
+</kw>
+<kw name="We Validate All Payment Rules" owner="payment_resources">
+<kw name="Validate All Rules" owner="steps.payment_validation.PaymentValidation">
+<arg>${payment_response}</arg>
+<doc>Run all validations in order (status/structure, methods R1–R4, options R5–R7).</doc>
+<status status="PASS" start="2026-02-17T13:16:52.062114" elapsed="0.000111"/>
+</kw>
+<doc>Run R1–R7 validation on ${payment_response}.</doc>
+<status status="PASS" start="2026-02-17T13:16:52.062004" elapsed="0.000248"/>
+</kw>
+<kw name="Validation Should Pass" owner="payment_resources">
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-02-17T13:16:52.062510" level="INFO">Validation passed (no assertion errors).</msg>
+<arg>Validation passed (no assertion errors).</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-02-17T13:16:52.062410" elapsed="0.000119"/>
+</kw>
+<doc>Assert no validation errors (positive case).</doc>
+<status status="PASS" start="2026-02-17T13:16:52.062308" elapsed="0.000243"/>
+</kw>
+<doc>Rules OK</doc>
+<tag>positive</tag>
+<tag>S1</tag>
+<status status="PASS" start="2026-02-17T13:16:50.029127" elapsed="2.033478"/>
+</test>
+<test id="s1-s1-t2" name="S2 BNPL blocked – method not selectable, options may be empty" line="13">
+<kw name="We Request Payment For Scenario" owner="payment_resources">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-02-17T13:16:52.063473" level="INFO">${params} = {'CellNumber': '09123456789', 'scenario': 's2'}</msg>
+<var>${params}</var>
+<arg>CellNumber=${CELL_NUMBER}</arg>
+<arg>scenario=${scenario}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-02-17T13:16:52.063086" elapsed="0.000408"/>
+</kw>
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2026-02-17T13:16:54.084101" level="INFO">GET Request : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s2 
+ path_url=/payment/?CellNumber=09123456789&amp;scenario=s2 
+ headers={'User-Agent': 'python-requests/2.32.5', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'} 
+ body=None 
+ </msg>
+<msg time="2026-02-17T13:16:54.084167" level="INFO">GET Response : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s2 
+ status=200, reason=OK 
+ headers={'Server': 'Werkzeug/3.1.5 Python/3.14.3', 'Date': 'Tue, 17 Feb 2026 09:46:54 GMT', 'Content-Type': 'application/json', 'Content-Length': '268', 'Connection': 'close'} 
+ body={"payment_methods":[{"id":1,"is_clickable":true,"title":"Online Payment","type":"online"},{"id":8,"is_clickable":false,"options":[],"source_id":367,"title":"\u067e\u0631\u062f\u0627\u062e\u062a \u0627\u0639\u062a\u0628\u0627\u0631\u06cc","type":"bnpl"}],"status":200}
+ 
+ </msg>
+<msg time="2026-02-17T13:16:54.084270" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${SESSION}</arg>
+<arg>/payment/</arg>
+<arg>params=${params}</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-02-17T13:16:52.063568" elapsed="2.020717"/>
+</kw>
+<kw name="Convert String To Json" owner="JSONLibrary">
+<msg time="2026-02-17T13:16:54.084773" level="INFO">${payment_response} = {'payment_methods': [{'id': 1, 'is_clickable': True, 'title': 'Online Payment', 'type': 'online'}, {'id': 8, 'is_clickable': False, 'options': [], 'source_id': 367, 'title': 'پرداخت اعتباری', 'type': ...</msg>
+<var>${payment_response}</var>
+<arg>${resp.text}</arg>
+<doc>Convert String to JSON object</doc>
+<status status="PASS" start="2026-02-17T13:16:54.084401" elapsed="0.000404"/>
+</kw>
+<kw name="Set Test Variable" owner="BuiltIn">
+<msg time="2026-02-17T13:16:54.085114" level="INFO">${payment_response} = {'payment_methods': [{'id': 1, 'is_clickable': True, 'title': 'Online Payment', 'type': 'online'}, {'id': 8, 'is_clickable': False, 'options': [], 'source_id': 367, 'title': 'پرداخت اعتباری', 'type': ...</msg>
+<arg>${payment_response}</arg>
+<arg>${payment_response}</arg>
+<doc>Makes a variable available everywhere within the scope of the current test.</doc>
+<status status="PASS" start="2026-02-17T13:16:54.084889" elapsed="0.000247"/>
+</kw>
+<arg>s2</arg>
+<doc>GET /payment/ for given scenario; store response in ${payment_response}.</doc>
+<status status="PASS" start="2026-02-17T13:16:52.062981" elapsed="2.022191"/>
+</kw>
+<kw name="We Validate All Payment Rules" owner="payment_resources">
+<kw name="Validate All Rules" owner="steps.payment_validation.PaymentValidation">
+<arg>${payment_response}</arg>
+<doc>Run all validations in order (status/structure, methods R1–R4, options R5–R7).</doc>
+<status status="PASS" start="2026-02-17T13:16:54.085379" elapsed="0.000097"/>
+</kw>
+<doc>Run R1–R7 validation on ${payment_response}.</doc>
+<status status="PASS" start="2026-02-17T13:16:54.085263" elapsed="0.000238"/>
+</kw>
+<kw name="Validation Should Pass" owner="payment_resources">
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-02-17T13:16:54.085745" level="INFO">Validation passed (no assertion errors).</msg>
+<arg>Validation passed (no assertion errors).</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-02-17T13:16:54.085651" elapsed="0.000113"/>
+</kw>
+<doc>Assert no validation errors (positive case).</doc>
+<status status="PASS" start="2026-02-17T13:16:54.085556" elapsed="0.000231"/>
+</kw>
+<doc>Method treated as not selectable; options may be empty</doc>
+<tag>positive</tag>
+<tag>S2</tag>
+<status status="PASS" start="2026-02-17T13:16:52.062745" elapsed="2.023096"/>
+</test>
+<test id="s1-s1-t3" name="S3 Insufficient credit – option with credit=0 ineligible by R5" line="20">
+<kw name="We Request Payment For Scenario" owner="payment_resources">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-02-17T13:16:54.086463" level="INFO">${params} = {'CellNumber': '09123456789', 'scenario': 's3'}</msg>
+<var>${params}</var>
+<arg>CellNumber=${CELL_NUMBER}</arg>
+<arg>scenario=${scenario}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-02-17T13:16:54.086292" elapsed="0.000193"/>
+</kw>
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2026-02-17T13:16:56.116445" level="INFO">GET Request : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s3 
+ path_url=/payment/?CellNumber=09123456789&amp;scenario=s3 
+ headers={'User-Agent': 'python-requests/2.32.5', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'} 
+ body=None 
+ </msg>
+<msg time="2026-02-17T13:16:56.116507" level="INFO">GET Response : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s3 
+ status=200, reason=OK 
+ headers={'Server': 'Werkzeug/3.1.5 Python/3.14.3', 'Date': 'Tue, 17 Feb 2026 09:46:56 GMT', 'Content-Type': 'application/json', 'Content-Length': '368', 'Connection': 'close'} 
+ body={"payment_methods":[{"id":8,"is_clickable":true,"options":[{"credit":0,"is_active":true,"is_default":true,"price_type":"CASH_PRICE","source_id":386,"title":"\u0642\u0633\u0637 1"},{"credit":1000,"is_active":true,"is_default":true,"price_type":"CREDIT_PRICE","source_id":387,"title":"\u0642\u0633\u0637 3"}],"source_id":367,"title":"BNPL","type":"bnpl"}],"status":200}
+ 
+ </msg>
+<msg time="2026-02-17T13:16:56.116612" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${SESSION}</arg>
+<arg>/payment/</arg>
+<arg>params=${params}</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-02-17T13:16:54.086556" elapsed="2.030070"/>
+</kw>
+<kw name="Convert String To Json" owner="JSONLibrary">
+<msg time="2026-02-17T13:16:56.117053" level="INFO">${payment_response} = {'payment_methods': [{'id': 8, 'is_clickable': True, 'options': [{'credit': 0, 'is_active': True, 'is_default': True, 'price_type': 'CASH_PRICE', 'source_id': 386, 'title': 'قسط 1'}, {'credit': 1000, ...</msg>
+<var>${payment_response}</var>
+<arg>${resp.text}</arg>
+<doc>Convert String to JSON object</doc>
+<status status="PASS" start="2026-02-17T13:16:56.116740" elapsed="0.000329"/>
+</kw>
+<kw name="Set Test Variable" owner="BuiltIn">
+<msg time="2026-02-17T13:16:56.117402" level="INFO">${payment_response} = {'payment_methods': [{'id': 8, 'is_clickable': True, 'options': [{'credit': 0, 'is_active': True, 'is_default': True, 'price_type': 'CASH_PRICE', 'source_id': 386, 'title': 'قسط 1'}, {'credit': 1000, ...</msg>
+<arg>${payment_response}</arg>
+<arg>${payment_response}</arg>
+<doc>Makes a variable available everywhere within the scope of the current test.</doc>
+<status status="PASS" start="2026-02-17T13:16:56.117160" elapsed="0.000397"/>
+</kw>
+<arg>s3</arg>
+<doc>GET /payment/ for given scenario; store response in ${payment_response}.</doc>
+<status status="PASS" start="2026-02-17T13:16:54.086189" elapsed="2.031423"/>
+</kw>
+<kw name="We Validate All Payment Rules" owner="payment_resources">
+<kw name="Validate All Rules" owner="steps.payment_validation.PaymentValidation">
+<arg>${payment_response}</arg>
+<doc>Run all validations in order (status/structure, methods R1–R4, options R5–R7).</doc>
+<status status="PASS" start="2026-02-17T13:16:56.117889" elapsed="0.000109"/>
+</kw>
+<doc>Run R1–R7 validation on ${payment_response}.</doc>
+<status status="PASS" start="2026-02-17T13:16:56.117720" elapsed="0.000358"/>
+</kw>
+<kw name="Validation Should Pass" owner="payment_resources">
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-02-17T13:16:56.118451" level="INFO">Validation passed (no assertion errors).</msg>
+<arg>Validation passed (no assertion errors).</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-02-17T13:16:56.118336" elapsed="0.000137"/>
+</kw>
+<doc>Assert no validation errors (positive case).</doc>
+<status status="PASS" start="2026-02-17T13:16:56.118147" elapsed="0.000351"/>
+</kw>
+<doc>Option marked ineligible by rule R5</doc>
+<tag>positive</tag>
+<tag>R5</tag>
+<tag>S3</tag>
+<status status="PASS" start="2026-02-17T13:16:54.085974" elapsed="2.032572"/>
+</test>
+<test id="s1-s1-t4" name="S4 Non-active option – option with is_active=false ineligible by R5" line="27">
+<kw name="We Request Payment For Scenario" owner="payment_resources">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-02-17T13:16:56.119414" level="INFO">${params} = {'CellNumber': '09123456789', 'scenario': 's4'}</msg>
+<var>${params}</var>
+<arg>CellNumber=${CELL_NUMBER}</arg>
+<arg>scenario=${scenario}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-02-17T13:16:56.119116" elapsed="0.000316"/>
+</kw>
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2026-02-17T13:16:58.154227" level="INFO">GET Request : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s4 
+ path_url=/payment/?CellNumber=09123456789&amp;scenario=s4 
+ headers={'User-Agent': 'python-requests/2.32.5', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'} 
+ body=None 
+ </msg>
+<msg time="2026-02-17T13:16:58.154362" level="INFO">GET Response : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s4 
+ status=200, reason=OK 
+ headers={'Server': 'Werkzeug/3.1.5 Python/3.14.3', 'Date': 'Tue, 17 Feb 2026 09:46:58 GMT', 'Content-Type': 'application/json', 'Content-Length': '375', 'Connection': 'close'} 
+ body={"payment_methods":[{"id":8,"is_clickable":true,"options":[{"credit":50000,"is_active":false,"is_default":true,"price_type":"CASH_PRICE","source_id":386,"title":"\u0642\u0633\u0637 1"},{"credit":100000,"is_active":true,"is_default":true,"price_type":"CREDIT_PRICE","source_id":387,"title":"\u0642\u0633\u0637 3"}],"source_id":367,"title":"BNPL","type":"bnpl"}],"status":200}
+ 
+ </msg>
+<msg time="2026-02-17T13:16:58.154583" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${SESSION}</arg>
+<arg>/payment/</arg>
+<arg>params=${params}</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-02-17T13:16:56.119509" elapsed="2.035109"/>
+</kw>
+<kw name="Convert String To Json" owner="JSONLibrary">
+<msg time="2026-02-17T13:16:58.155600" level="INFO">${payment_response} = {'payment_methods': [{'id': 8, 'is_clickable': True, 'options': [{'credit': 50000, 'is_active': False, 'is_default': True, 'price_type': 'CASH_PRICE', 'source_id': 386, 'title': 'قسط 1'}, {'credit': 1...</msg>
+<var>${payment_response}</var>
+<arg>${resp.text}</arg>
+<doc>Convert String to JSON object</doc>
+<status status="PASS" start="2026-02-17T13:16:58.154840" elapsed="0.000805"/>
+</kw>
+<kw name="Set Test Variable" owner="BuiltIn">
+<msg time="2026-02-17T13:16:58.156254" level="INFO">${payment_response} = {'payment_methods': [{'id': 8, 'is_clickable': True, 'options': [{'credit': 50000, 'is_active': False, 'is_default': True, 'price_type': 'CASH_PRICE', 'source_id': 386, 'title': 'قسط 1'}, {'credit': 1...</msg>
+<arg>${payment_response}</arg>
+<arg>${payment_response}</arg>
+<doc>Makes a variable available everywhere within the scope of the current test.</doc>
+<status status="PASS" start="2026-02-17T13:16:58.155813" elapsed="0.000476"/>
+</kw>
+<arg>s4</arg>
+<doc>GET /payment/ for given scenario; store response in ${payment_response}.</doc>
+<status status="PASS" start="2026-02-17T13:16:56.118998" elapsed="2.037345"/>
+</kw>
+<kw name="We Validate All Payment Rules" owner="payment_resources">
+<kw name="Validate All Rules" owner="steps.payment_validation.PaymentValidation">
+<arg>${payment_response}</arg>
+<doc>Run all validations in order (status/structure, methods R1–R4, options R5–R7).</doc>
+<status status="PASS" start="2026-02-17T13:16:58.156662" elapsed="0.000142"/>
+</kw>
+<doc>Run R1–R7 validation on ${payment_response}.</doc>
+<status status="PASS" start="2026-02-17T13:16:58.156484" elapsed="0.000363"/>
+</kw>
+<kw name="Validation Should Pass" owner="payment_resources">
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-02-17T13:16:58.157257" level="INFO">Validation passed (no assertion errors).</msg>
+<arg>Validation passed (no assertion errors).</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-02-17T13:16:58.157099" elapsed="0.000190"/>
+</kw>
+<doc>Assert no validation errors (positive case).</doc>
+<status status="PASS" start="2026-02-17T13:16:58.156933" elapsed="0.000434"/>
+</kw>
+<doc>Option ineligible by rule R5</doc>
+<tag>positive</tag>
+<tag>R5</tag>
+<tag>S4</tag>
+<status status="PASS" start="2026-02-17T13:16:56.118748" elapsed="2.038800"/>
+</test>
+<test id="s1-s1-t5" name="S5 Default option invalid – multiple is_default=true among eligible (R6)" line="34">
+<kw name="We Request Payment For Scenario" owner="payment_resources">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-02-17T13:16:58.160904" level="INFO">${params} = {'CellNumber': '09123456789', 'scenario': 's5'}</msg>
+<var>${params}</var>
+<arg>CellNumber=${CELL_NUMBER}</arg>
+<arg>scenario=${scenario}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-02-17T13:16:58.160236" elapsed="0.000715"/>
+</kw>
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2026-02-17T13:17:00.201389" level="INFO">GET Request : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s5 
+ path_url=/payment/?CellNumber=09123456789&amp;scenario=s5 
+ headers={'User-Agent': 'python-requests/2.32.5', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'} 
+ body=None 
+ </msg>
+<msg time="2026-02-17T13:17:00.201463" level="INFO">GET Response : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s5 
+ status=200, reason=OK 
+ headers={'Server': 'Werkzeug/3.1.5 Python/3.14.3', 'Date': 'Tue, 17 Feb 2026 09:47:00 GMT', 'Content-Type': 'application/json', 'Content-Length': '374', 'Connection': 'close'} 
+ body={"payment_methods":[{"id":8,"is_clickable":true,"options":[{"credit":50000,"is_active":true,"is_default":true,"price_type":"CASH_PRICE","source_id":386,"title":"\u0642\u0633\u0637 1"},{"credit":100000,"is_active":true,"is_default":true,"price_type":"CREDIT_PRICE","source_id":387,"title":"\u0642\u0633\u0637 3"}],"source_id":367,"title":"BNPL","type":"bnpl"}],"status":200}
+ 
+ </msg>
+<msg time="2026-02-17T13:17:00.201573" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${SESSION}</arg>
+<arg>/payment/</arg>
+<arg>params=${params}</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-02-17T13:16:58.161110" elapsed="2.040485"/>
+</kw>
+<kw name="Convert String To Json" owner="JSONLibrary">
+<msg time="2026-02-17T13:17:00.202122" level="INFO">${payment_response} = {'payment_methods': [{'id': 8, 'is_clickable': True, 'options': [{'credit': 50000, 'is_active': True, 'is_default': True, 'price_type': 'CASH_PRICE', 'source_id': 386, 'title': 'قسط 1'}, {'credit': 10...</msg>
+<var>${payment_response}</var>
+<arg>${resp.text}</arg>
+<doc>Convert String to JSON object</doc>
+<status status="PASS" start="2026-02-17T13:17:00.201726" elapsed="0.000418"/>
+</kw>
+<kw name="Set Test Variable" owner="BuiltIn">
+<msg time="2026-02-17T13:17:00.202503" level="INFO">${payment_response} = {'payment_methods': [{'id': 8, 'is_clickable': True, 'options': [{'credit': 50000, 'is_active': True, 'is_default': True, 'price_type': 'CASH_PRICE', 'source_id': 386, 'title': 'قسط 1'}, {'credit': 10...</msg>
+<arg>${payment_response}</arg>
+<arg>${payment_response}</arg>
+<doc>Makes a variable available everywhere within the scope of the current test.</doc>
+<status status="PASS" start="2026-02-17T13:17:00.202233" elapsed="0.000292"/>
+</kw>
+<arg>s5</arg>
+<doc>GET /payment/ for given scenario; store response in ${payment_response}.</doc>
+<status status="PASS" start="2026-02-17T13:16:58.159344" elapsed="2.043215"/>
+</kw>
+<kw name="We Run Validation And Capture Error" owner="payment_resources">
+<kw name="Run Keyword And Expect Error" owner="BuiltIn">
+<kw name="Validate All Rules" owner="steps.payment_validation.PaymentValidation">
+<msg time="2026-02-17T13:17:00.203106" level="FAIL">R6: Among eligible BNPL options (method index 0), exactly one must have is_default=true; found 2</msg>
+<arg>${payment_response}</arg>
+<doc>Run all validations in order (status/structure, methods R1–R4, options R5–R7).</doc>
+<status status="FAIL" start="2026-02-17T13:17:00.202969" elapsed="0.000741">R6: Among eligible BNPL options (method index 0), exactly one must have is_default=true; found 2</status>
+</kw>
+<msg time="2026-02-17T13:17:00.203837" level="INFO">${err} = R6: Among eligible BNPL options (method index 0), exactly one must have is_default=true; found 2</msg>
+<var>${err}</var>
+<arg>*</arg>
+<arg>Validate All Rules</arg>
+<arg>${payment_response}</arg>
+<doc>Runs the keyword and checks that the expected error occurred.</doc>
+<status status="PASS" start="2026-02-17T13:17:00.202777" elapsed="0.001074"/>
+</kw>
+<kw name="Set Test Variable" owner="BuiltIn">
+<msg time="2026-02-17T13:17:00.204215" level="INFO">${validation_error} = R6: Among eligible BNPL options (method index 0), exactly one must have is_default=true; found 2</msg>
+<arg>${validation_error}</arg>
+<arg>${err}</arg>
+<doc>Makes a variable available everywhere within the scope of the current test.</doc>
+<status status="PASS" start="2026-02-17T13:17:00.203908" elapsed="0.000327"/>
+</kw>
+<doc>Run validation expecting failure; store error in ${validation_error}.</doc>
+<status status="PASS" start="2026-02-17T13:17:00.202649" elapsed="0.001613"/>
+</kw>
+<kw name="The Error Message Should Contain" owner="payment_resources">
+<kw name="Should Contain" owner="BuiltIn">
+<arg>${validation_error}</arg>
+<arg>${expected}</arg>
+<doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
+<status status="PASS" start="2026-02-17T13:17:00.204435" elapsed="0.000258"/>
+</kw>
+<arg>R6</arg>
+<doc>Assert validation error message contains expected text.</doc>
+<status status="PASS" start="2026-02-17T13:17:00.204324" elapsed="0.000414"/>
+</kw>
+<doc>Fail with clear message (R6)</doc>
+<tag>negative</tag>
+<tag>R6</tag>
+<tag>S5</tag>
+<status status="PASS" start="2026-02-17T13:16:58.157991" elapsed="2.046794"/>
+</test>
+<test id="s1-s1-t6" name="S6 Missing required field – payment_methods[0] missing type/title" line="41">
+<kw name="We Request Payment For Scenario" owner="payment_resources">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-02-17T13:17:00.206061" level="INFO">${params} = {'CellNumber': '09123456789', 'scenario': 's6'}</msg>
+<var>${params}</var>
+<arg>CellNumber=${CELL_NUMBER}</arg>
+<arg>scenario=${scenario}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-02-17T13:17:00.205230" elapsed="0.000926"/>
+</kw>
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2026-02-17T13:17:02.221676" level="INFO">GET Request : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s6 
+ path_url=/payment/?CellNumber=09123456789&amp;scenario=s6 
+ headers={'User-Agent': 'python-requests/2.32.5', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'} 
+ body=None 
+ </msg>
+<msg time="2026-02-17T13:17:02.221738" level="INFO">GET Response : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s6 
+ status=200, reason=OK 
+ headers={'Server': 'Werkzeug/3.1.5 Python/3.14.3', 'Date': 'Tue, 17 Feb 2026 09:47:02 GMT', 'Content-Type': 'application/json', 'Content-Length': '44', 'Connection': 'close'} 
+ body={"payment_methods":[{"id":1}],"status":200}
+ 
+ </msg>
+<msg time="2026-02-17T13:17:02.221832" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${SESSION}</arg>
+<arg>/payment/</arg>
+<arg>params=${params}</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-02-17T13:17:00.206237" elapsed="2.015610"/>
+</kw>
+<kw name="Convert String To Json" owner="JSONLibrary">
+<msg time="2026-02-17T13:17:02.222255" level="INFO">${payment_response} = {'payment_methods': [{'id': 1}], 'status': 200}</msg>
+<var>${payment_response}</var>
+<arg>${resp.text}</arg>
+<doc>Convert String to JSON object</doc>
+<status status="PASS" start="2026-02-17T13:17:02.221963" elapsed="0.000304"/>
+</kw>
+<kw name="Set Test Variable" owner="BuiltIn">
+<msg time="2026-02-17T13:17:02.222543" level="INFO">${payment_response} = {'payment_methods': [{'id': 1}], 'status': 200}</msg>
+<arg>${payment_response}</arg>
+<arg>${payment_response}</arg>
+<doc>Makes a variable available everywhere within the scope of the current test.</doc>
+<status status="PASS" start="2026-02-17T13:17:02.222328" elapsed="0.000236"/>
+</kw>
+<arg>s6</arg>
+<doc>GET /payment/ for given scenario; store response in ${payment_response}.</doc>
+<status status="PASS" start="2026-02-17T13:17:00.205119" elapsed="2.017481"/>
+</kw>
+<kw name="We Run Validation And Capture Error" owner="payment_resources">
+<kw name="Run Keyword And Expect Error" owner="BuiltIn">
+<kw name="Validate All Rules" owner="steps.payment_validation.PaymentValidation">
+<msg time="2026-02-17T13:17:02.223074" level="FAIL">R1/S6: payment_methods[0] missing required field 'type'</msg>
+<arg>${payment_response}</arg>
+<doc>Run all validations in order (status/structure, methods R1–R4, options R5–R7).</doc>
+<status status="FAIL" start="2026-02-17T13:17:02.222956" elapsed="0.000949">R1/S6: payment_methods[0] missing required field 'type'</status>
+</kw>
+<msg time="2026-02-17T13:17:02.224138" level="INFO">${err} = R1/S6: payment_methods[0] missing required field 'type'</msg>
+<var>${err}</var>
+<arg>*</arg>
+<arg>Validate All Rules</arg>
+<arg>${payment_response}</arg>
+<doc>Runs the keyword and checks that the expected error occurred.</doc>
+<status status="PASS" start="2026-02-17T13:17:02.222813" elapsed="0.001363"/>
+</kw>
+<kw name="Set Test Variable" owner="BuiltIn">
+<msg time="2026-02-17T13:17:02.225226" level="INFO">${validation_error} = R1/S6: payment_methods[0] missing required field 'type'</msg>
+<arg>${validation_error}</arg>
+<arg>${err}</arg>
+<doc>Makes a variable available everywhere within the scope of the current test.</doc>
+<status status="PASS" start="2026-02-17T13:17:02.224359" elapsed="0.000906"/>
+</kw>
+<doc>Run validation expecting failure; store error in ${validation_error}.</doc>
+<status status="PASS" start="2026-02-17T13:17:02.222694" elapsed="0.002618"/>
+</kw>
+<kw name="The Error Message Should Contain" owner="payment_resources">
+<kw name="Should Contain" owner="BuiltIn">
+<arg>${validation_error}</arg>
+<arg>${expected}</arg>
+<doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
+<status status="PASS" start="2026-02-17T13:17:02.225595" elapsed="0.000193"/>
+</kw>
+<arg>missing required field</arg>
+<doc>Assert validation error message contains expected text.</doc>
+<status status="PASS" start="2026-02-17T13:17:02.225414" elapsed="0.000403"/>
+</kw>
+<doc>Fail validation</doc>
+<tag>negative</tag>
+<tag>S6</tag>
+<status status="PASS" start="2026-02-17T13:17:00.204901" elapsed="2.020964"/>
+</test>
+<test id="s1-s1-t7" name="S7 Wrong type – id string, is_clickable string" line="48">
+<kw name="We Request Payment For Scenario" owner="payment_resources">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-02-17T13:17:02.226647" level="INFO">${params} = {'CellNumber': '09123456789', 'scenario': 's7'}</msg>
+<var>${params}</var>
+<arg>CellNumber=${CELL_NUMBER}</arg>
+<arg>scenario=${scenario}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-02-17T13:17:02.226457" elapsed="0.000205"/>
+</kw>
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2026-02-17T13:17:04.252405" level="INFO">GET Request : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s7 
+ path_url=/payment/?CellNumber=09123456789&amp;scenario=s7 
+ headers={'User-Agent': 'python-requests/2.32.5', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'} 
+ body=None 
+ </msg>
+<msg time="2026-02-17T13:17:04.252465" level="INFO">GET Response : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s7 
+ status=200, reason=OK 
+ headers={'Server': 'Werkzeug/3.1.5 Python/3.14.3', 'Date': 'Tue, 17 Feb 2026 09:47:04 GMT', 'Content-Type': 'application/json', 'Content-Length': '110', 'Connection': 'close'} 
+ body={"payment_methods":[{"id":"not_an_int","is_clickable":"true","title":"Online","type":"online"}],"status":200}
+ 
+ </msg>
+<msg time="2026-02-17T13:17:04.252557" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${SESSION}</arg>
+<arg>/payment/</arg>
+<arg>params=${params}</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-02-17T13:17:02.226788" elapsed="2.025783"/>
+</kw>
+<kw name="Convert String To Json" owner="JSONLibrary">
+<msg time="2026-02-17T13:17:04.252990" level="INFO">${payment_response} = {'payment_methods': [{'id': 'not_an_int', 'is_clickable': 'true', 'title': 'Online', 'type': 'online'}], 'status': 200}</msg>
+<var>${payment_response}</var>
+<arg>${resp.text}</arg>
+<doc>Convert String to JSON object</doc>
+<status status="PASS" start="2026-02-17T13:17:04.252688" elapsed="0.000314"/>
+</kw>
+<kw name="Set Test Variable" owner="BuiltIn">
+<msg time="2026-02-17T13:17:04.253487" level="INFO">${payment_response} = {'payment_methods': [{'id': 'not_an_int', 'is_clickable': 'true', 'title': 'Online', 'type': 'online'}], 'status': 200}</msg>
+<arg>${payment_response}</arg>
+<arg>${payment_response}</arg>
+<doc>Makes a variable available everywhere within the scope of the current test.</doc>
+<status status="PASS" start="2026-02-17T13:17:04.253267" elapsed="0.000242"/>
+</kw>
+<arg>s7</arg>
+<doc>GET /payment/ for given scenario; store response in ${payment_response}.</doc>
+<status status="PASS" start="2026-02-17T13:17:02.226333" elapsed="2.027213"/>
+</kw>
+<kw name="We Run Validation And Capture Error" owner="payment_resources">
+<kw name="Run Keyword And Expect Error" owner="BuiltIn">
+<kw name="Validate All Rules" owner="steps.payment_validation.PaymentValidation">
+<msg time="2026-02-17T13:17:04.254029" level="FAIL">Type: payment_methods[0].id must be int, got str</msg>
+<arg>${payment_response}</arg>
+<doc>Run all validations in order (status/structure, methods R1–R4, options R5–R7).</doc>
+<status status="FAIL" start="2026-02-17T13:17:04.253915" elapsed="0.000421">Type: payment_methods[0].id must be int, got str</status>
+</kw>
+<msg time="2026-02-17T13:17:04.254403" level="INFO">${err} = Type: payment_methods[0].id must be int, got str</msg>
+<var>${err}</var>
+<arg>*</arg>
+<arg>Validate All Rules</arg>
+<arg>${payment_response}</arg>
+<doc>Runs the keyword and checks that the expected error occurred.</doc>
+<status status="PASS" start="2026-02-17T13:17:04.253777" elapsed="0.000637"/>
+</kw>
+<kw name="Set Test Variable" owner="BuiltIn">
+<msg time="2026-02-17T13:17:04.254764" level="INFO">${validation_error} = Type: payment_methods[0].id must be int, got str</msg>
+<arg>${validation_error}</arg>
+<arg>${err}</arg>
+<doc>Makes a variable available everywhere within the scope of the current test.</doc>
+<status status="PASS" start="2026-02-17T13:17:04.254465" elapsed="0.000317"/>
+</kw>
+<doc>Run validation expecting failure; store error in ${validation_error}.</doc>
+<status status="PASS" start="2026-02-17T13:17:04.253659" elapsed="0.001149"/>
+</kw>
+<kw name="The Error Message Should Contain" owner="payment_resources">
+<kw name="Should Contain" owner="BuiltIn">
+<arg>${validation_error}</arg>
+<arg>${expected}</arg>
+<doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
+<status status="PASS" start="2026-02-17T13:17:04.254983" elapsed="0.000144"/>
+</kw>
+<arg>must be</arg>
+<doc>Assert validation error message contains expected text.</doc>
+<status status="PASS" start="2026-02-17T13:17:04.254868" elapsed="0.000284"/>
+</kw>
+<doc>Fail type validation</doc>
+<tag>negative</tag>
+<tag>S7</tag>
+<status status="PASS" start="2026-02-17T13:17:02.226066" elapsed="2.029131"/>
+</test>
+<test id="s1-s1-t8" name="S8 Non-success – body.status != 200" line="55">
+<kw name="We Request Payment For Scenario" owner="payment_resources">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-02-17T13:17:04.255799" level="INFO">${params} = {'CellNumber': '09123456789', 'scenario': 's8'}</msg>
+<var>${params}</var>
+<arg>CellNumber=${CELL_NUMBER}</arg>
+<arg>scenario=${scenario}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-02-17T13:17:04.255610" elapsed="0.000249"/>
+</kw>
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2026-02-17T13:17:06.285498" level="INFO">GET Request : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s8 
+ path_url=/payment/?CellNumber=09123456789&amp;scenario=s8 
+ headers={'User-Agent': 'python-requests/2.32.5', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'} 
+ body=None 
+ </msg>
+<msg time="2026-02-17T13:17:06.285570" level="INFO">GET Response : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s8 
+ status=200, reason=OK 
+ headers={'Server': 'Werkzeug/3.1.5 Python/3.14.3', 'Date': 'Tue, 17 Feb 2026 09:47:06 GMT', 'Content-Type': 'application/json', 'Content-Length': '36', 'Connection': 'close'} 
+ body={"payment_methods":[],"status":500}
+ 
+ </msg>
+<msg time="2026-02-17T13:17:06.285674" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${SESSION}</arg>
+<arg>/payment/</arg>
+<arg>params=${params}</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-02-17T13:17:04.255957" elapsed="2.029736"/>
+</kw>
+<kw name="Convert String To Json" owner="JSONLibrary">
+<msg time="2026-02-17T13:17:06.286200" level="INFO">${payment_response} = {'payment_methods': [], 'status': 500}</msg>
+<var>${payment_response}</var>
+<arg>${resp.text}</arg>
+<doc>Convert String to JSON object</doc>
+<status status="PASS" start="2026-02-17T13:17:06.285829" elapsed="0.000387"/>
+</kw>
+<kw name="Set Test Variable" owner="BuiltIn">
+<msg time="2026-02-17T13:17:06.286582" level="INFO">${payment_response} = {'payment_methods': [], 'status': 500}</msg>
+<arg>${payment_response}</arg>
+<arg>${payment_response}</arg>
+<doc>Makes a variable available everywhere within the scope of the current test.</doc>
+<status status="PASS" start="2026-02-17T13:17:06.286309" elapsed="0.000298"/>
+</kw>
+<arg>s8</arg>
+<doc>GET /payment/ for given scenario; store response in ${payment_response}.</doc>
+<status status="PASS" start="2026-02-17T13:17:04.255509" elapsed="2.031141"/>
+</kw>
+<kw name="We Run Validation And Capture Error" owner="payment_resources">
+<kw name="Run Keyword And Expect Error" owner="BuiltIn">
+<kw name="Validate All Rules" owner="steps.payment_validation.PaymentValidation">
+<msg time="2026-02-17T13:17:06.287139" level="FAIL">Non-success status: body.status=500 (expected 200). Fail fast.</msg>
+<arg>${payment_response}</arg>
+<doc>Run all validations in order (status/structure, methods R1–R4, options R5–R7).</doc>
+<status status="FAIL" start="2026-02-17T13:17:06.287031" elapsed="0.000392">Non-success status: body.status=500 (expected 200). Fail fast.</status>
+</kw>
+<msg time="2026-02-17T13:17:06.287493" level="INFO">${err} = Non-success status: body.status=500 (expected 200). Fail fast.</msg>
+<var>${err}</var>
+<arg>*</arg>
+<arg>Validate All Rules</arg>
+<arg>${payment_response}</arg>
+<doc>Runs the keyword and checks that the expected error occurred.</doc>
+<status status="PASS" start="2026-02-17T13:17:06.286896" elapsed="0.000609"/>
+</kw>
+<kw name="Set Test Variable" owner="BuiltIn">
+<msg time="2026-02-17T13:17:06.287851" level="INFO">${validation_error} = Non-success status: body.status=500 (expected 200). Fail fast.</msg>
+<arg>${validation_error}</arg>
+<arg>${err}</arg>
+<doc>Makes a variable available everywhere within the scope of the current test.</doc>
+<status status="PASS" start="2026-02-17T13:17:06.287561" elapsed="0.000308"/>
+</kw>
+<doc>Run validation expecting failure; store error in ${validation_error}.</doc>
+<status status="PASS" start="2026-02-17T13:17:06.286762" elapsed="0.001131"/>
+</kw>
+<kw name="The Error Message Should Contain" owner="payment_resources">
+<kw name="Should Contain" owner="BuiltIn">
+<arg>${validation_error}</arg>
+<arg>${expected}</arg>
+<doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
+<status status="PASS" start="2026-02-17T13:17:06.288059" elapsed="0.000138"/>
+</kw>
+<arg>status</arg>
+<doc>Assert validation error message contains expected text.</doc>
+<status status="PASS" start="2026-02-17T13:17:06.287952" elapsed="0.000270"/>
+</kw>
+<doc>Fail fast with clear diagnostics</doc>
+<tag>negative</tag>
+<tag>S8</tag>
+<status status="PASS" start="2026-02-17T13:17:04.255311" elapsed="2.032958"/>
+</test>
+<test id="s1-s1-t9" name="S9 HTTP 500 – transport failure" line="62">
+<kw name="We Request Payment For Scenario Expecting Status" owner="payment_resources">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-02-17T13:17:06.288905" level="INFO">${params} = {'CellNumber': '09123456789', 'scenario': 's9'}</msg>
+<var>${params}</var>
+<arg>CellNumber=${CELL_NUMBER}</arg>
+<arg>scenario=${scenario}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-02-17T13:17:06.288693" elapsed="0.000224"/>
+</kw>
+<kw name="Run Keyword And Expect Error" owner="BuiltIn">
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2026-02-17T13:17:08.317198" level="INFO">GET Request : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s9 
+ path_url=/payment/?CellNumber=09123456789&amp;scenario=s9 
+ headers={'User-Agent': 'python-requests/2.32.5', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'} 
+ body=None 
+ </msg>
+<msg time="2026-02-17T13:17:08.317279" level="INFO">GET Response : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s9 
+ status=500, reason=INTERNAL SERVER ERROR 
+ headers={'Server': 'Werkzeug/3.1.5 Python/3.14.3', 'Date': 'Tue, 17 Feb 2026 09:47:08 GMT', 'Content-Type': 'application/json', 'Content-Length': '36', 'Connection': 'close'} 
+ body={"payment_methods":[],"status":500}
+ 
+ </msg>
+<msg time="2026-02-17T13:17:08.317368" level="FAIL">HTTPError: 500 Server Error: INTERNAL SERVER ERROR for url: http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s9</msg>
+<arg>${SESSION}</arg>
+<arg>/payment/</arg>
+<arg>params=${params}</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="FAIL" start="2026-02-17T13:17:06.289095" elapsed="2.068706">HTTPError: 500 Server Error: INTERNAL SERVER ERROR for url: http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s9</status>
+</kw>
+<msg time="2026-02-17T13:17:08.357999" level="INFO">${err} = HTTPError: 500 Server Error: INTERNAL SERVER ERROR for url: http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s9</msg>
+<var>${err}</var>
+<arg>*</arg>
+<arg>GET On Session</arg>
+<arg>${SESSION}</arg>
+<arg>/payment/</arg>
+<arg>params=${params}</arg>
+<doc>Runs the keyword and checks that the expected error occurred.</doc>
+<status status="PASS" start="2026-02-17T13:17:06.288971" elapsed="2.069056"/>
+</kw>
+<kw name="Should Contain" owner="BuiltIn">
+<arg>${err}</arg>
+<arg>${expected_status}</arg>
+<doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
+<status status="PASS" start="2026-02-17T13:17:08.358174" elapsed="0.000377"/>
+</kw>
+<arg>s9</arg>
+<arg>500</arg>
+<doc>GET /payment/ for given scenario and assert HTTP status.</doc>
+<status status="PASS" start="2026-02-17T13:17:06.288582" elapsed="2.070013"/>
+</kw>
+<doc>HTTP 500 status from server</doc>
+<tag>http</tag>
+<tag>negative</tag>
+<tag>S9</tag>
+<status status="PASS" start="2026-02-17T13:17:06.288392" elapsed="2.070262"/>
+</test>
+<test id="s1-s1-t10" name="S10 Wallet rule violation – is_wallet true while type is not wallet" line="67">
+<kw name="We Request Payment For Scenario" owner="payment_resources">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-02-17T13:17:08.359406" level="INFO">${params} = {'CellNumber': '09123456789', 'scenario': 's_r3'}</msg>
+<var>${params}</var>
+<arg>CellNumber=${CELL_NUMBER}</arg>
+<arg>scenario=${scenario}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-02-17T13:17:08.359203" elapsed="0.000217"/>
+</kw>
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2026-02-17T13:17:10.373166" level="INFO">GET Request : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s_r3 
+ path_url=/payment/?CellNumber=09123456789&amp;scenario=s_r3 
+ headers={'User-Agent': 'python-requests/2.32.5', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'} 
+ body=None 
+ </msg>
+<msg time="2026-02-17T13:17:10.373238" level="INFO">GET Response : url=http://localhost:8080/payment/?CellNumber=09123456789&amp;scenario=s_r3 
+ status=200, reason=OK 
+ headers={'Server': 'Werkzeug/3.1.5 Python/3.14.3', 'Date': 'Tue, 17 Feb 2026 09:47:10 GMT', 'Content-Type': 'application/json', 'Content-Length': '131', 'Connection': 'close'} 
+ body={"payment_methods":[{"id":2,"is_clickable":true,"is_wallet":true,"title":"Online wallet misconfig","type":"online"}],"status":200}
+ 
+ </msg>
+<msg time="2026-02-17T13:17:10.373340" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${SESSION}</arg>
+<arg>/payment/</arg>
+<arg>params=${params}</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-02-17T13:17:08.359474" elapsed="2.013880"/>
+</kw>
+<kw name="Convert String To Json" owner="JSONLibrary">
+<msg time="2026-02-17T13:17:10.373777" level="INFO">${payment_response} = {'payment_methods': [{'id': 2, 'is_clickable': True, 'is_wallet': True, 'title': 'Online wallet misconfig', 'type': 'online'}], 'status': 200}</msg>
+<var>${payment_response}</var>
+<arg>${resp.text}</arg>
+<doc>Convert String to JSON object</doc>
+<status status="PASS" start="2026-02-17T13:17:10.373465" elapsed="0.000340"/>
+</kw>
+<kw name="Set Test Variable" owner="BuiltIn">
+<msg time="2026-02-17T13:17:10.374106" level="INFO">${payment_response} = {'payment_methods': [{'id': 2, 'is_clickable': True, 'is_wallet': True, 'title': 'Online wallet misconfig', 'type': 'online'}], 'status': 200}</msg>
+<arg>${payment_response}</arg>
+<arg>${payment_response}</arg>
+<doc>Makes a variable available everywhere within the scope of the current test.</doc>
+<status status="PASS" start="2026-02-17T13:17:10.373887" elapsed="0.000241"/>
+</kw>
+<arg>s_r3</arg>
+<doc>GET /payment/ for given scenario; store response in ${payment_response}.</doc>
+<status status="PASS" start="2026-02-17T13:17:08.359069" elapsed="2.015095"/>
+</kw>
+<kw name="We Run Validation And Capture Error" owner="payment_resources">
+<kw name="Run Keyword And Expect Error" owner="BuiltIn">
+<kw name="Validate All Rules" owner="steps.payment_validation.PaymentValidation">
+<msg time="2026-02-17T13:17:10.374636" level="FAIL">R3: is_wallet must be false when type is not wallet (method index 0)</msg>
+<arg>${payment_response}</arg>
+<doc>Run all validations in order (status/structure, methods R1–R4, options R5–R7).</doc>
+<status status="FAIL" start="2026-02-17T13:17:10.374515" elapsed="0.000435">R3: is_wallet must be false when type is not wallet (method index 0)</status>
+</kw>
+<msg time="2026-02-17T13:17:10.375020" level="INFO">${err} = R3: is_wallet must be false when type is not wallet (method index 0)</msg>
+<var>${err}</var>
+<arg>*</arg>
+<arg>Validate All Rules</arg>
+<arg>${payment_response}</arg>
+<doc>Runs the keyword and checks that the expected error occurred.</doc>
+<status status="PASS" start="2026-02-17T13:17:10.374379" elapsed="0.000651"/>
+</kw>
+<kw name="Set Test Variable" owner="BuiltIn">
+<msg time="2026-02-17T13:17:10.375381" level="INFO">${validation_error} = R3: is_wallet must be false when type is not wallet (method index 0)</msg>
+<arg>${validation_error}</arg>
+<arg>${err}</arg>
+<doc>Makes a variable available everywhere within the scope of the current test.</doc>
+<status status="PASS" start="2026-02-17T13:17:10.375082" elapsed="0.000317"/>
+</kw>
+<doc>Run validation expecting failure; store error in ${validation_error}.</doc>
+<status status="PASS" start="2026-02-17T13:17:10.374256" elapsed="0.001170"/>
+</kw>
+<kw name="The Error Message Should Contain" owner="payment_resources">
+<kw name="Should Contain" owner="BuiltIn">
+<arg>${validation_error}</arg>
+<arg>${expected}</arg>
+<doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
+<status status="PASS" start="2026-02-17T13:17:10.375601" elapsed="0.000138"/>
+</kw>
+<arg>R3</arg>
+<doc>Assert validation error message contains expected text.</doc>
+<status status="PASS" start="2026-02-17T13:17:10.375493" elapsed="0.000270"/>
+</kw>
+<doc>R3 violation when is_wallet=true and type!=wallet</doc>
+<tag>negative</tag>
+<tag>R3</tag>
+<tag>S10</tag>
+<status status="PASS" start="2026-02-17T13:17:08.358786" elapsed="2.017024"/>
+</test>
+<status status="PASS" start="2026-02-17T13:16:47.762938" elapsed="22.613127"/>
+</suite>
+<status status="PASS" start="2026-02-17T13:16:47.741777" elapsed="22.634523"/>
+</suite>
+<statistics>
+<total>
+<stat pass="10" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="1" fail="0" skip="0">http</stat>
+<stat pass="6" fail="0" skip="0">negative</stat>
+<stat pass="4" fail="0" skip="0">positive</stat>
+<stat pass="1" fail="0" skip="0">R3</stat>
+<stat pass="2" fail="0" skip="0">R5</stat>
+<stat pass="1" fail="0" skip="0">R6</stat>
+<stat pass="1" fail="0" skip="0">S1</stat>
+<stat pass="1" fail="0" skip="0">S10</stat>
+<stat pass="1" fail="0" skip="0">S2</stat>
+<stat pass="1" fail="0" skip="0">S3</stat>
+<stat pass="1" fail="0" skip="0">S4</stat>
+<stat pass="1" fail="0" skip="0">S5</stat>
+<stat pass="1" fail="0" skip="0">S6</stat>
+<stat pass="1" fail="0" skip="0">S7</stat>
+<stat pass="1" fail="0" skip="0">S8</stat>
+<stat pass="1" fail="0" skip="0">S9</stat>
+</tag>
+<suite>
+<stat name="Features" id="s1" pass="10" fail="0" skip="0">Features</stat>
+<stat name="Payment Validation" id="s1-s1" pass="10" fail="0" skip="0">Features.Payment Validation</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
